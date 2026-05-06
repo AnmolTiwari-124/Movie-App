@@ -1,13 +1,29 @@
 import MovieCard from "../components/Moviecard";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import{getPopularMovies,searchMovies} from '../services/api';
 import "../css/Home.css"
 function Home() {
   const [searchquery, setsearchquery] = useState("");
-  const movies = [
-    { id: 1, title: "tees maar khan", release_date: 2010 },
-    { id: 2, title: "PK", release_date: 2002 },
-    { id: 3, title: "dangal", release_date: 2004 },
-  ];
+  const [movies,setMovies] = useState([]);
+  const [error,setError] = useState(null);
+  const [loading,setLoading] = useState(null);
+
+  useEffect(()=>{
+    const loadPopularMovies = async() => {
+      try{
+        const popularMovies = await getPopularMovies()
+        setMovies(popularMovies)
+      }
+      catch(err){
+        console.log(err)
+        setError("failed to load movies...")
+      }
+      finally{
+        setLoading(false);
+      }
+    }
+    loadPopularMovies();
+  },[]);
 
 
   const handleSearch = (e) => {     
@@ -28,13 +44,19 @@ function Home() {
         />
         <button type="submit" className="search-button">Search</button>
       </form>
-      <div className="movies-grid">
+
+      {error &&  <div className="error-message">{error}</div> }    
+
+      {loading ? (<div className="loading">loading ...</div>)       //if loading then this othewise the movie grid
+      : (<div className="movies-grid">
         {movies.map((movie) =>             // Map is used to map all movies dynamically
             movie.title.toLowerCase().startsWith(searchquery)
             && (<MovieCard movie={movie} key={movie.id} /> // id is neccessary to uniquely identify the movie
           )
         )}
       </div>
+    )}
+       
     </div>
   );
 }
