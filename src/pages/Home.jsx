@@ -25,13 +25,13 @@ function Home() {
     loadPopularMovies();
   },[]);
 
-
   const handleSearch = (e) => {     
     e.preventDefault();
     // alert(searchquery);
     alert(searchquery.trim());
     setsearchquery("");
   };
+
   return (
     <div className="home">
       <form onSubmit={handleSearch} className="search-form">
