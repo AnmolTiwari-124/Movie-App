@@ -6,7 +6,7 @@ function Home() {
   const [searchquery, setsearchquery] = useState("");
   const [movies,setMovies] = useState([]);
   const [error,setError] = useState(null);
-  const [loading,setLoading] = useState(null);
+const [loading,setLoading] = useState(true);
 
   useEffect(()=>{
     const loadPopularMovies = async() => {
@@ -25,11 +25,25 @@ function Home() {
     loadPopularMovies();
   },[]);
 
-  const handleSearch = (e) => {     
+
+  const handleSearch = async (e) => {     
     e.preventDefault();
     // alert(searchquery);
-    alert(searchquery.trim());
-    setsearchquery("");
+    if(!searchquery.trim()) return ;
+    if(loading) return;
+
+    setLoading(true)
+
+      try{
+        const searchResults = await searchMovies(searchquery);
+        setMovies(searchResults);
+      }catch(err){
+        console.log(err);
+        setError("failed to seach movies ...")
+      }finally{
+        setLoading(false);
+      }
+    
   };
 
   return (
